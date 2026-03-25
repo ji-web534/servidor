@@ -1,47 +1,42 @@
 const express = require('express');
-const app = express();
-const PORT = 4000;
 const cors = require('cors');
-;
-app.use(cors()); // 2. Le damos permiso a React para entrar
-app.get('/market/:coin', async (req, res) => { 
-    
-    // 2. TODO el código debe ir AQUÍ ADENTRO para que funcione cada vez que alguien entra
-    const monedaSolicitada = req.params.coin;
+const axios = require('axios');
+
+const app = express();
+const PORT = 5000;
+
+app.use(cors());
+
+console.log("-----------------------------------------");
+console.log("🔥 EL SERVIDOR ESTÁ INTENTANDO ARRANCAR...");
+console.log("-----------------------------------------");
+
+app.get('/market/:coin', async (req, res) => {
+    const moneda = req.params.coin.toUpperCase();
+    console.log(`\n📩 Petición recibida para: ${moneda}`);
 
     try {
-      const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-    params: {
-        vs_currency: 'usd',
-        order: 'market_cap_desc',
-        per_page: 10,
-        page: 1,
-        sparkline: false
-    },
-    headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'MiAppCrypto/1.0' // Esto ayuda a que no te bloqueen
-    }
-});
+        const symbol = `${moneda}USDT`;
+        console.log(`🌐 Llamando a Binance API para: ${symbol}`);
 
-        // Buscamos la moneda específica dentro de lo que nos dio la API
-        const datosMoneda = response.data.find(c => c.id === monedaSolicitada.toLowerCase());
-
-        res.json({ 
-            mensaje: "Datos recibidos",
-            nombre: monedaSolicitada.toUpperCase(),
-            id: monedaSolicitada.toLowerCase(),
-            precioActual: datosMoneda ? datosMoneda.current_price : "No encontrado",
-            datosAPI: response.data 
-        });
+        const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+        
+        console.log("✅ Binance respondió con éxito");
+        res.json(response.data);
 
     } catch (error) {
-        console.error("Error al conectar con la API:", error.message);
-        res.status(500).json({ error: "No se pudo obtener la información" });
+        console.error("❌ ERROR EN LA PETICIÓN:");
+        if (error.response) {
+            console.error(`Código: ${error.response.status} - Info: ${JSON.stringify(error.response.data)}`);
+            res.status(error.response.status).json(error.response.data);
+        } else {
+            console.error(`Mensaje: ${error.message}`);
+            res.status(500).json({ error: "Error de conexión", mensaje: error.message });
+        }
     }
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`Prueba este link: http://localhost:${PORT}/market/bitcoin`);
+    console.log(`🚀 SERVIDOR LISTO EN EL PUERTO ${PORT}`);
+    console.log(`👉 Prueba este link: http://localhost:${PORT}/market/btc`);
 });
