@@ -8,7 +8,7 @@ const PORT = 4000;
 // . Le damos permiso a React para entrar
 app.use(cors());
 
-app.get('/market/all', async (req, res) => {
+app.get('/market/history/:id', async (req, res) => {
     // 2. TODO el código debe ir AQUÍ ADENTRO para que funcione cada vez que alguien entra
     
     
