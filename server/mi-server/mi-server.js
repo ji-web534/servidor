@@ -8,6 +8,17 @@ const PORT = 4000;
 // . Le damos permiso a React para entrar
 app.use(cors());
 
+app.get('/market/all', async (req, res) => {
+    try {
+        console.log(`📩 Petición: Listado para Sidebar`);
+        const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+        const response = await axios.get(url);
+        res.json(response.data);
+    } catch (error) {
+        console.error("❌ Error en listado:", error.message);
+        res.status(500).json({ error: "Error en servidor" });
+    }
+});
 app.get('/market/history/:id', async (req, res) => {
     // 2. TODO el código debe ir AQUÍ ADENTRO para que funcione cada vez que alguien entra
     
