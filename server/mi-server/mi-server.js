@@ -27,7 +27,7 @@ app.get('/market/history/:id', async (req, res) => {
         console.log(`\n📩 Petición recibida: Listado completo`);
 
         // 1. Usamos la URL de 'markets' (esta ya trae el Top 10)
-        const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+        const url = `https://api.coingecko.com/api/v3/coins/markets_chart?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
         
         const response = await axios.get(url);
         
